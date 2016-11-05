@@ -11,15 +11,16 @@ export class Todos {
   remote: any;
  
   constructor(private http: Http) {
-    console.log("constructor");
+    console.log("todos.ts constructor");
   }
  
   init(details){
  
     console.log("init?");
-    this.db = new PouchDB('cloudo');
+    this.db = new PouchDB('partiu-revisar');
  
     this.remote = details.userDBs.supertest;
+    console.log(JSON.stringify(this.remote));
  
     let options = {
       live: true,
@@ -27,16 +28,33 @@ export class Todos {
       continuous: true
     };
  
-    this.db.sync(this.remote, options);
- 
-    console.log(this.db);
+    this.db.sync(this.remote, options)
+      .on('change', function (info) {
+        // handle change
+        console.log('[PouchDB] change: ' + JSON.stringify(info))
+      }).on('paused', function (err) {
+        // replication paused (e.g. replication up to date, user went offline)
+        console.log('[PouchDB] Paused: ' + JSON.stringify(err))
+      }).on('active', function () {
+        // replicate resumed (e.g. new changes replicating, user went back online)
+        console.log('[PouchDB] Active')
+      }).on('denied', function (err) {
+        // a document failed to replicate (e.g. due to permissions)
+        console.log('[PouchDB] Denied: ' + JSON.stringify(err))
+      }).on('complete', function (info) {
+        // handle complete
+        console.log('[PouchDB] Complete: ' + JSON.stringify(info))
+      }).on('error', function (err) {
+        // handle error
+        console.log('[PouchDB] Erro: ' + JSON.stringify(err))
+      });
  
   }
  
   logout(){
  
     this.data = null;
- 
+    
     this.db.destroy().then(() => {
       console.log("database removed");
     });
@@ -45,10 +63,13 @@ export class Todos {
   getTodos() {
  
     if (this.data) {
+      console.log('todos getTodos: this.data vazio/nulo');
       return Promise.resolve(this.data);
     }
  
     return new Promise(resolve => {
+
+      console.log('iniciando getTodos');
  
       this.db.allDocs({
  
@@ -59,14 +80,16 @@ export class Todos {
         this.data = [];
  
         let docs = result.rows.map((row) => {
+          console.log('doc: ' + row.doc);
           this.data.push(row.doc);
         });
- 
+        console.log('todos.ts docs: ' + JSON.stringify(docs));
         resolve(this.data);
  
-        this.db.changes({live: true, since: 'now', include_docs: true}).on('change', (change) => {
-          this.handleChange(change);
-        });
+        this.db.changes({live: true, since: 'now', include_docs: true})
+          .on('change', (change) => {
+            this.handleChange(change);
+          });
  
       }).catch((error) => {
  

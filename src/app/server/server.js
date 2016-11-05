@@ -22,19 +22,19 @@ app.use(function(req, res, next) {
 var config = {
   dbServer: {
     protocol: 'http://',
-    host: 'localhost:5984',
+    host: '192.168.1.102:5984',
     user: '',
     password: '',
     userDB: 'sl-users',
     couchAuthDB: '_users'
   },
   mailer: {
-    fromEmail: 'partiurfb@gmail.com',
+    fromEmail: 'email@gmail.com',
     options: {
       service: 'Gmail',
         auth: {
-          user: 'partiurfb@gmail.com',
-          pass: 'partiurfb2015'
+          user: 'email@gmail.com',
+          pass: 'email-pass'
         }
     }
   },

@@ -3,7 +3,7 @@ import { Http, Headers } from '@angular/http';
 import { NavController } from 'ionic-angular';
 import { SignupPage } from '../signup/signup';
 import { HomePage } from '../home/home';
-import { Todos } from '../../providers/todos'
+import { Todos } from '../../providers/todos';
 
 /*
   Generated class for the Login page.
@@ -14,6 +14,7 @@ import { Todos } from '../../providers/todos'
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html'
+
   // templateUrl: 'build/pages/login/login.html',
 })
 export class LoginPage {
@@ -40,8 +41,9 @@ export class LoginPage {
         password: this.password
     };
 
-    this.http.post('http://localhost:3000/auth/login', JSON.stringify(credentials), {headers: headers})
+    this.http.post('http://192.168.1.102:3000/auth/login', JSON.stringify(credentials), {headers: headers})
       .subscribe(res => {
+        console.log(res.json())
         this.todoService.init(res.json());
         this.nav.setRoot(HomePage);
       }, (err) => {

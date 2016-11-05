@@ -13,18 +13,22 @@ export class HomePage {
   todos: any;
 
   constructor(public nav: NavController, public todoService: Todos, public alertCtrl: AlertController) {
-    
+    console.log("home.ts constructor");
   }
 
   ionViewDidLoad(){
     this.todoService.getTodos().then((data) => {
-        this.todos = data;
+      console.log('home.ts ionViewDidLoad: ' + JSON.stringify(data));
+      this.todos = data;
     });
   }
 
   logout(){
+    console.log('home.ts logout()');
     this.todoService.logout();
+    console.log('home.ts apagando todos');
     this.todos = null;
+    console.log('home.ts chamando LoginPage');
     this.nav.setRoot(LoginPage);
   }
 
